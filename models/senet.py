@@ -6,6 +6,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .lastlayer import LastLayer
 
 class BasicBlock(nn.Module):
     def __init__(self, in_planes, planes, stride=1):
@@ -76,7 +77,7 @@ class PreActBlock(nn.Module):
         return out
 
 
-class SENet(nn.Module):
+class SENet(nn.Module, LastLayer):
     def __init__(self, block, num_blocks, num_classes=10):
         super(SENet, self).__init__()
         self.in_planes = 64
@@ -107,6 +108,10 @@ class SENet(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
+
+    def last(self) -> nn.Module:
+        """Return the last layer of the model."""
+        return self.linear
 
 
 def SENet18():

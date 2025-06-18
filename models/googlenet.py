@@ -3,6 +3,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .lastlayer import LastLayer
+
 
 class Inception(nn.Module):
     def __init__(self, in_planes, n1x1, n3x3red, n3x3, n5x5red, n5x5, pool_planes):
@@ -53,7 +55,7 @@ class Inception(nn.Module):
         return torch.cat([y1,y2,y3,y4], 1)
 
 
-class GoogLeNet(nn.Module):
+class GoogLeNet(nn.Module, LastLayer):
     def __init__(self):
         super(GoogLeNet, self).__init__()
         self.pre_layers = nn.Sequential(
@@ -96,6 +98,10 @@ class GoogLeNet(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
+
+    def last(self) -> nn.Module:
+        """Return the last layer of the model."""
+        return self.linear
 
 
 def test():

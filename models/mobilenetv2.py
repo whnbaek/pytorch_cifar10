@@ -7,6 +7,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .lastlayer import LastLayer
 
 class Block(nn.Module):
     '''expand + depthwise + pointwise'''
@@ -37,7 +38,7 @@ class Block(nn.Module):
         return out
 
 
-class MobileNetV2(nn.Module):
+class MobileNetV2(nn.Module, LastLayer):
     # (expansion, out_planes, num_blocks, stride)
     cfg = [(1,  16, 1, 1),
            (6,  24, 2, 1),  # NOTE: change stride 2 -> 1 for CIFAR10
@@ -75,6 +76,10 @@ class MobileNetV2(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
+
+    def last(self) -> nn.Module:
+        """Return the last layer of the model."""
+        return self.linear
 
 
 def test():

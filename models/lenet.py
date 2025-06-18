@@ -2,7 +2,10 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
-class LeNet(nn.Module):
+from .lastlayer import LastLayer
+
+
+class LeNet(nn.Module, LastLayer):
     def __init__(self):
         super(LeNet, self).__init__()
         self.conv1 = nn.Conv2d(3, 6, 5)
@@ -21,3 +24,7 @@ class LeNet(nn.Module):
         out = F.relu(self.fc2(out))
         out = self.fc3(out)
         return out
+
+    def last(self) -> nn.Module:
+        """Return the last layer of the model."""
+        return self.fc3

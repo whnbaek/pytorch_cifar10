@@ -7,6 +7,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .lastlayer import LastLayer
 
 class Block(nn.Module):
     '''Depthwise conv + Pointwise conv'''
@@ -23,7 +24,7 @@ class Block(nn.Module):
         return out
 
 
-class MobileNet(nn.Module):
+class MobileNet(nn.Module, LastLayer):
     # (128,2) means conv planes=128, conv stride=2, by default conv stride=1
     cfg = [64, (128,2), 128, (256,2), 256, (512,2), 512, 512, 512, 512, 512, (1024,2), 1024]
 
@@ -50,6 +51,10 @@ class MobileNet(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
+
+    def last(self) -> nn.Module:
+        """Return the last layer of the model."""
+        return self.linear
 
 
 def test():

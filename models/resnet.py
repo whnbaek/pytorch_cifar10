@@ -10,6 +10,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .lastlayer import LastLayer
+
 
 class BasicBlock(nn.Module):
     expansion = 1
@@ -70,7 +72,7 @@ class Bottleneck(nn.Module):
         return out
 
 
-class ResNet(nn.Module):
+class ResNet(nn.Module, LastLayer):
     def __init__(self, block, num_blocks, num_classes=10):
         super(ResNet, self).__init__()
         self.in_planes = 64
@@ -102,6 +104,9 @@ class ResNet(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
+
+    def last(self) -> nn.Module:
+        return self.linear
 
 
 def ResNet18():

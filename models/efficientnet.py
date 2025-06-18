@@ -8,6 +8,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .lastlayer import LastLayer
 
 def swish(x):
     return x * x.sigmoid()
@@ -104,7 +105,7 @@ class Block(nn.Module):
         return out
 
 
-class EfficientNet(nn.Module):
+class EfficientNet(nn.Module, LastLayer):
     def __init__(self, cfg, num_classes=10):
         super(EfficientNet, self).__init__()
         self.cfg = cfg
@@ -149,6 +150,10 @@ class EfficientNet(nn.Module):
             out = F.dropout(out, p=dropout_rate)
         out = self.linear(out)
         return out
+
+    def last(self) -> nn.Module:
+        """Return the last layer of the model."""
+        return self.linear
 
 
 def EfficientNetB0():

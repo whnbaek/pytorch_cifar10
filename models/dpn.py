@@ -3,6 +3,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .lastlayer import LastLayer
+
 
 class Bottleneck(nn.Module):
     def __init__(self, last_planes, in_planes, out_planes, dense_depth, stride, first_layer):
@@ -35,7 +37,7 @@ class Bottleneck(nn.Module):
         return out
 
 
-class DPN(nn.Module):
+class DPN(nn.Module, LastLayer):
     def __init__(self, cfg):
         super(DPN, self).__init__()
         in_planes, out_planes = cfg['in_planes'], cfg['out_planes']
@@ -68,6 +70,9 @@ class DPN(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
+
+    def last(self) -> nn.Module:
+        return self.linear
 
 
 def DPN26():

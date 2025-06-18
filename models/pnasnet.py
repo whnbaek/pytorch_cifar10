@@ -6,6 +6,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .lastlayer import LastLayer
+
 
 class SepConv(nn.Module):
     '''Separable Convolution.'''
@@ -68,7 +70,8 @@ class CellB(nn.Module):
         y = torch.cat([b1,b2], 1)
         return F.relu(self.bn2(self.conv2(y)))
 
-class PNASNet(nn.Module):
+
+class PNASNet(nn.Module, LastLayer):
     def __init__(self, cell_type, num_cells, num_planes):
         super(PNASNet, self).__init__()
         self.in_planes = num_planes
@@ -107,6 +110,10 @@ class PNASNet(nn.Module):
         out = F.avg_pool2d(out, 8)
         out = self.linear(out.view(out.size(0), -1))
         return out
+
+    def last(self) -> nn.Module:
+        """Return the last layer of the model."""
+        return self.linear
 
 
 def PNASNetA():

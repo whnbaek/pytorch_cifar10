@@ -8,6 +8,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .lastlayer import LastLayer
+
 
 class SE(nn.Module):
     '''Squeeze-and-Excitation block.'''
@@ -65,7 +67,7 @@ class Block(nn.Module):
         return out
 
 
-class RegNet(nn.Module):
+class RegNet(nn.Module, LastLayer):
     def __init__(self, cfg, num_classes=10):
         super(RegNet, self).__init__()
         self.cfg = cfg
@@ -105,6 +107,9 @@ class RegNet(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
+
+    def last(self) -> nn.Module:
+        return self.linear
 
 
 def RegNetX_200MF():

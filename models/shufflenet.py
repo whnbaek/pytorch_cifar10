@@ -6,6 +6,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .lastlayer import LastLayer
+
 
 class ShuffleBlock(nn.Module):
     def __init__(self, groups):
@@ -24,7 +26,7 @@ class Bottleneck(nn.Module):
         super(Bottleneck, self).__init__()
         self.stride = stride
 
-        mid_planes = out_planes/4
+        mid_planes = out_planes // 4
         g = 1 if in_planes==24 else groups
         self.conv1 = nn.Conv2d(in_planes, mid_planes, kernel_size=1, groups=g, bias=False)
         self.bn1 = nn.BatchNorm2d(mid_planes)
@@ -48,7 +50,7 @@ class Bottleneck(nn.Module):
         return out
 
 
-class ShuffleNet(nn.Module):
+class ShuffleNet(nn.Module, LastLayer):
     def __init__(self, cfg):
         super(ShuffleNet, self).__init__()
         out_planes = cfg['out_planes']
@@ -81,6 +83,9 @@ class ShuffleNet(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
+
+    def last(self) -> nn.Module:
+        return self.linear
 
 
 def ShuffleNetG2():

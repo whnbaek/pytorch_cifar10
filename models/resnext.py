@@ -6,6 +6,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .lastlayer import LastLayer
+
 
 class Block(nn.Module):
     '''Grouped convolution block.'''
@@ -37,7 +39,7 @@ class Block(nn.Module):
         return out
 
 
-class ResNeXt(nn.Module):
+class ResNeXt(nn.Module, LastLayer):
     def __init__(self, num_blocks, cardinality, bottleneck_width, num_classes=10):
         super(ResNeXt, self).__init__()
         self.cardinality = cardinality
@@ -72,6 +74,9 @@ class ResNeXt(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
+
+    def last(self) -> nn.Module:
+        return self.linear
 
 
 def ResNeXt29_2x64d():

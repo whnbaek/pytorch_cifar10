@@ -7,6 +7,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .lastlayer import LastLayer
 
 class BasicBlock(nn.Module):
     expansion = 1
@@ -82,7 +83,7 @@ class Tree(nn.Module):
         return out
 
 
-class DLA(nn.Module):
+class DLA(nn.Module, LastLayer):
     def __init__(self, block=BasicBlock, num_classes=10):
         super(DLA, self).__init__()
         self.base = nn.Sequential(
@@ -121,6 +122,9 @@ class DLA(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
+
+    def last(self) -> nn.Module:
+        return self.linear
 
 
 def test():

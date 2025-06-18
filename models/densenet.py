@@ -5,6 +5,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .lastlayer import LastLayer
+
 
 class Bottleneck(nn.Module):
     def __init__(self, in_planes, growth_rate):
@@ -33,7 +35,7 @@ class Transition(nn.Module):
         return out
 
 
-class DenseNet(nn.Module):
+class DenseNet(nn.Module, LastLayer):
     def __init__(self, block, nblocks, growth_rate=12, reduction=0.5, num_classes=10):
         super(DenseNet, self).__init__()
         self.growth_rate = growth_rate
@@ -82,6 +84,11 @@ class DenseNet(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
+
+    def last(self) -> nn.Module:
+        """Return the last layer of the model."""
+        return self.linear
+
 
 def DenseNet121():
     return DenseNet(Bottleneck, [6,12,24,16], growth_rate=32)

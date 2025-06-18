@@ -6,6 +6,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .lastlayer import LastLayer
+
 
 class ShuffleBlock(nn.Module):
     def __init__(self, groups=2):
@@ -93,7 +95,7 @@ class DownBlock(nn.Module):
         return out
 
 
-class ShuffleNetV2(nn.Module):
+class ShuffleNetV2(nn.Module, LastLayer):
     def __init__(self, net_size):
         super(ShuffleNetV2, self).__init__()
         out_channels = configs[net_size]['out_channels']
@@ -129,6 +131,10 @@ class ShuffleNetV2(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
+
+    def last(self) -> nn.Module:
+        """Return the last layer of the model."""
+        return self.linear
 
 
 configs = {
